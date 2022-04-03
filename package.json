@@ -5,13 +5,20 @@
   "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run": "./src/index.js"
+    "run": "./src/index.js",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "author": "Alejandro",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^5.18.3",
+    "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "express-handlebars": "^6.0.3",
     "firebase-admin": "^10.0.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15",
     "playwright": "^1.20.2"
   }
 }
