@@ -1,12 +1,12 @@
 <div class="col-md-6 offset-md-3">
   <div class="card bg-dark text-light">
     <div class="card-header">
-      <h1 class="h4 text-white">Contacts List</h1>
+      <h1 class="h4 text-white">Lista de Salones</h1>
     </div>
     <div class="card-body">
-      {{#if contacts}}
+      {{#if salones}}
         <ul class="list-group">
-          {{#each contacts}}
+          {{#each salones}}
             <li
               class="list-group-item d-flex justify-content-between align-items-center"
             >
@@ -28,8 +28,8 @@
             </li>
           {{/each}}
         </ul>
-      {{!-- {{else}}
-        <p class="fs-4 text-center">No Contacts Yet.</p> --}}
+      {{else}}
+        <p class="fs-4 text-center">Sin Salones.</p>
       {{/if}}
     </div>
     <div class="card-footer">
@@ -79,18 +79,18 @@
             />
           </div>
         </div>
-        {{#if contact.id}}
+        {{!-- {{#if contact.id}} --}}
           <button class="btn btn-primary btn-block">
             Update
           </button>
           <a href="/" class="btn btn-secondary">
             Cancel
           </a>
-        {{else}}
+        {{!-- {{else}} --}}
           <button class="btn btn-primary btn-block">
             Add
           </button>
-        {{/if}}
+        {{!-- {{/if}} --}}
       </form>
     </div>
   </div>
