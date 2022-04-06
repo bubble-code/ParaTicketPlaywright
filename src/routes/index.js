@@ -85,12 +85,52 @@ router.get("/add-salones", async (req, res) => {
       page.click('text=Inicia sesión')
     ]);
     // Click th >> nth=0
-    await page.locator('th').first().click();
-    const list = await page.locator('.list');
-    console.log(list);
-    // await browser.close()
-  })()
+    const list = await page.$$('.list>tbody>tr')
+    let tem = []
+    const result = []
+    for (const ele of list) {
+      td = await ele.$$('td')
+      id = await td[1].innerText();
+      subject = await td[2].innerText();
+      from = await td[3].innerText();
+      result.push({ id, subject, from })
+      // result[from] = (result[from] || 0) + 1
+    }
+    console.log(result);
+    // ===========
+    await browser.close()
+    try {
+      const listCollection = await db.collection("salones").doc("Comunidades").collection("Madrid").doc('Salones');
+      result.map(async function ({ id, subject, from }) {
+        await listCollection.collection(from).doc('Averias').collection('open').doc(id).create({
+          subject,
+          id
+        })
+        console.log(id);
+      })
+      // const salones = listCollection.map((coll) => {
+      //   if (result.hasOwnProperty(coll.id)) {
+      //     console.log(coll.id)
+      //   }
 
+      // });
+    } catch (error) {
+      console.error(error);
+    }
+  })()
+// -----------------------------------------------------------------------------
+// Insert datas in firebase
+// -----------------------------------------------------------------------------
+//   const { firstname, lastname, email, phone } = re;
+//   await db.collection("contacts").add({
+//     firstname,
+//     lastname,
+//     email,
+//     phone,
+//   });
+//   res.redirect("/");
+
+// }
 
 
 
