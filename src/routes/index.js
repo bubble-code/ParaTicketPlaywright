@@ -93,26 +93,28 @@ router.get("/add-salones", async (req, res) => {
       id = await td[1].innerText();
       subject = await td[2].innerText();
       from = await td[3].innerText();
-      result.push({ id, subject, from })
+      date = await td[6].innerText();
+      state = await td[7].innerText();
+      result.push({ id, subject, from, date, state })
       // result[from] = (result[from] || 0) + 1
     }
     console.log(result);
     // ===========
     await browser.close()
     try {
-      const listCollection = await db.collection("salones").doc("Comunidades").collection("Madrid").doc('Salones');
-      result.map(async function ({ id, subject, from }) {
-        await listCollection.collection(from).doc('Averias').collection('open').doc(id).create({
+      const listCollection = await db.collection("salones").doc("Madrid").collection("Salones").get();
+      result.map(async function ({ id, subject, from, date, state }) {
+        await db.collection("salones").doc("Madrid").collection("Salones").doc(from).collection("Averias").doc(id).set({
           subject,
-          id
-        })
-        console.log(id);
+          id,
+          date,
+          state
+        });   
       })
       // const salones = listCollection.map((coll) => {
       //   if (result.hasOwnProperty(coll.id)) {
       //     console.log(coll.id)
       //   }
-
       // });
     } catch (error) {
       console.error(error);
