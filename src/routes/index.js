@@ -82,7 +82,7 @@ router.get("/add-salones", async (req, res) => {
     await page.fill('[placeholder="Contraseña"]', 'madrid');
     // Click text=Inicia sesión
     await Promise.all([
-      page.waitForNavigation(/*{ url: 'http://otrs.dosniha.eu/osticket/scp/index.php' }*/),
+      page.waitForNavigation('http://otrs.dosniha.eu/osticket/scp/index.php'),
       page.click('text=Inicia sesión')
     ]);
     // Click th >> nth=0
@@ -147,6 +147,25 @@ router.post("/new-aviso", async (req, res) => {
     text,
   });
   res.redirect("/avisos");
+});
+// -------------------------------------------------------------------------
+// Objetivos
+// -------------------------------------------------------------------------
+router.get("/Objetivo/:id", async (req, res) => {
+  console.log(req.params.id);
+  try {
+    const listObjetivos = await db.collection("salones").doc("Madrid").collection("Salones").doc(req.params.id).collection('Objetivos').get();
+    // console.log(listObjetivos.docs.length)
+    const detailsObject = listObjetivos.docs.map((elem) => ({
+      id: elem.id, ...elem.data()
+    }));
+    res.render("Objetivos", { detailsObject, nameSalon: req.params.id });
+    // console.log({ detailsObject });
+  } catch (error) {
+    console.error(error);
+  }
+  // res.redirect("Objetivos", { detailsObject });
+
 });
 // -----------------------------------------------------------------------------
 // Insert datas in firebase

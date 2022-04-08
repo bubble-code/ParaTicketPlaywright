@@ -1,0 +1,78 @@
+<div class="col-md-6 offset-md-3">
+  <div class="card bg-dark text-light">
+    <div class="card-header">
+
+      <h1 class="h6 text-white">Objetivos Salon {{nameSalon}} </h1>
+    </div>
+    <div class="card-body">
+      {{#if detailsObject}}
+      <ul class="list-group">
+        {{#each detailsObject}}
+        <li
+          class="list-group-item d-flex justify-content-between
+          align-items-center">
+          <div class="my-auto">
+            <h3 class="h6 bg-info">{{id}}</h3>
+            <h3 class="h6">Mensual {{Target}}</h3>
+            <p class="fs-6">Diario {{Daily}} </p>
+          </div>
+          <div>
+            <a
+              href="/delete-contact/{{id}}"
+              class="btn btn-danger">Delete</a>
+            <a
+              href="/edit-contact/{{id}}"
+              class="btn btn-secondary">Edit</a>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <p class="fs-4 text-center">Sin Objetivos.</p>
+      {{/if}}
+    </div>
+    <div class="card-footer">
+      <form action="/new-aviso" method="POST">
+        <h3 class="h6 text-light">Add Objetivo:</h3>
+        <div class="row">
+          <div class="col">
+            <label for="firstname">Mes:</label>
+            <input type="date" class="date form-control" style="width: 200px" />
+            <input
+              type="text"
+              name="asunto"
+              placeholder="Asunto"
+              class="form-control mb-3"
+              value="{{aviso.asunto}}"
+              autofocus
+              />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="email">Contenido:</label>
+            <textarea rows="4" cols="20"
+              type="text"
+              name="text"
+              class="form-control mb-3"
+              value="{{aviso.text}}"
+              maxlength="120">
+            </textarea>
+          </div>
+        </div>
+        {{#if salones.id}}
+        <button class="btn btn-primary btn-block">
+          Update
+        </button>
+        <a href="/" class="btn btn-secondary">
+          Cancel
+        </a>
+        {{else}}
+        <button class="btn btn-primary btn-block">
+          Add
+        </button>
+        {{/if}}
+      </form>
+    </div>
+  </div>
+</div>
