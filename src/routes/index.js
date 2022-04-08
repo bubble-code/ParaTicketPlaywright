@@ -53,7 +53,8 @@ router.post("/update-contact/:id", async (req, res) => {
 // -----------------------------------------------------------------------------
 router.get("/add-salones", async (req, res) => {
   try {
-    const querySnapshot = await db.collection("salones").doc("Comunidades").collection("Madrid").doc('Salones').listCollections();
+    // const querySnapshot = await db.collection("salones").doc("Madrid").collection("Salones").doc('Salones').listCollections();
+    const querySnapshot = await db.collection("salones").doc("Madrid").collection("Salones").listDocuments();
     const salones = querySnapshot.map((coll) => ({
       id: coll.id
     }));
@@ -109,7 +110,7 @@ router.get("/add-salones", async (req, res) => {
           id,
           date,
           state
-        });   
+        });
       })
       // const salones = listCollection.map((coll) => {
       //   if (result.hasOwnProperty(coll.id)) {
@@ -120,6 +121,33 @@ router.get("/add-salones", async (req, res) => {
       console.error(error);
     }
   })()
+// ---------------------------------------------------------------------------
+// Avisos
+// ---------------------------------------------------------------------------
+router.get("/avisos", async (req, res) => {
+  try {
+    // const querySnapshot = await db.collection("salones").doc("Madrid").collection("Salones").doc('Salones').listCollections();
+    const querySnapshot = await db.collection("salones").doc("Madrid").collection("Avisos").listDocuments();
+    const salones = querySnapshot.map((coll) => ({
+      id: coll.id
+    }));
+    res.render("Avisos", { salones });
+    console.log({ salones });
+  } catch (error) {
+    console.error(error);
+  }
+})
+// -----------------------------------------------------------------------
+// New Avisos
+// -----------------------------------------------------------------------
+router.post("/new-aviso", async (req, res) => {
+  const { asunto, text } = req.body;
+  await db.collection("salones").doc("Madrid").collection("Avisos").doc(asunto).set({
+    asunto,
+    text,
+  });
+  res.redirect("/avisos");
+});
 // -----------------------------------------------------------------------------
 // Insert datas in firebase
 // -----------------------------------------------------------------------------

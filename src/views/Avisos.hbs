@@ -1,0 +1,78 @@
+<div class="col-md-6 offset-md-3">
+  <div class="card bg-dark text-light">
+    <div class="card-header">
+      <h1 class="h4 text-white">Avisos</h1>
+    </div>
+    <div class="card-body">
+      {{#if salones}}
+        <ul class="list-group">
+          {{#each salones}}
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div class="my-auto">
+                <h3 class="h6">{{id}}</h3>
+                {{!-- <h3 class="h6">{{firstname}} {{lastname}}</h3>
+                <p>{{email}}</p> --}}
+              </div>
+              <div>
+                <a
+                  href="/delete-contact/{{id}}"
+                  class="btn btn-danger"
+                >Delete</a>
+                <a
+                  href="/edit-contact/{{id}}"
+                  class="btn btn-secondary"
+                >Edit</a>
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="fs-4 text-center">Sin Salones.</p>
+      {{/if}}
+    </div>
+    <div class="card-footer">
+      <form action="/new-aviso" method="POST">
+        <div class="row">
+          <div class="col">
+            <label for="firstname">Asunto:</label>
+            <input
+              type="text"
+              name="asunto"
+              placeholder="Asunto"
+              class="form-control mb-3"
+              value="{{aviso.asunto}}"
+              autofocus
+            />
+          </div>          
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="email">Contenido:</label>
+            <textarea rows="4" cols="20"
+              type="text"
+              name="text"
+              class="form-control mb-3"
+              value="{{aviso.text}}"
+              maxlength="120"
+            >
+            </textarea>
+          </div>         
+        </div>
+        {{#if salones.id}}
+          <button class="btn btn-primary btn-block">
+            Update
+          </button>
+          <a href="/" class="btn btn-secondary">
+            Cancel
+          </a>
+        {{else}}
+          <button class="btn btn-primary btn-block">
+            Add
+          </button>
+        {{/if}}
+      </form>
+    </div>
+  </div>
+</div>
