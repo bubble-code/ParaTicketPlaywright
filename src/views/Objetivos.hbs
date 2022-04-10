@@ -32,23 +32,49 @@
       {{/if}}
     </div>
     <div class="card-footer">
-      <form action="/new-aviso" method="POST">
+      <form action="/addObject/{{nameSalon}}" method="POST">
         <h3 class="h6 text-light">Add Objetivo:</h3>
         <div class="row">
           <div class="col">
-            <label for="firstname">Mes:</label>
-            <input type="date" class="date form-control" style="width: 200px" />
+            <label for="mes">Mes:</label>
+            <select class="form-select form-select-sm"
+              aria-label=".form-select-sm example" name="Mes">
+              <option value="Enero">Enero</option>
+              <option value="Febrero">Febrero</option>
+              <option value="Marzo">Marzo</option>
+              <option value="Abril">Abril</option>
+              <option value="Mayo">Mayo</option>
+              <option value="Junio">Junio</option>
+              <option value="Julio">Julio</option>
+              <option value="Agosto">Agosto</option>
+              <option value="Septiembre">Septiembre</option>
+              <option value="Octubre">Octubre</option>
+              <option value="Noviembre">Noviembre</option>
+              <option value="Diciembre">Diciembre</option>
+            </select>
+          </div>
+          <div class="col">
             <input
-              type="text"
-              name="asunto"
-              placeholder="Asunto"
+              type="number"
+              name="Target"
+              placeholder="Target"
+              class="form-control mb-3"
+              value="{{aviso.asunto}}"
+              autofocus
+              />
+          </div>
+          <div class="col">
+            <input
+              type="number"
+              name="Daily"
+              placeholder="Daily"
               class="form-control mb-3"
               value="{{aviso.asunto}}"
               autofocus
               />
           </div>
         </div>
-        <div class="row">
+        {{!-- <div class="row">
           <div class="col">
             <label for="email">Contenido:</label>
             <textarea rows="4" cols="20"
@@ -59,19 +85,11 @@
               maxlength="120">
             </textarea>
           </div>
-        </div>
-        {{#if salones.id}}
-        <button class="btn btn-primary btn-block">
-          Update
-        </button>
-        <a href="/" class="btn btn-secondary">
-          Cancel
-        </a>
-        {{else}}
+        </div> --}}
+        {{!-- {{#if salones.id}} --}}
         <button class="btn btn-primary btn-block">
           Add
         </button>
-        {{/if}}
       </form>
     </div>
   </div>
