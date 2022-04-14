@@ -3,6 +3,7 @@ const { chromium } = require('playwright')
 const sql = require('mssql');
 
 const { Router, text } = require("express");
+const { Promise } = require("mssql/lib/base");
 const router = Router();
 
 router.get("/", async (req, res) => {
@@ -236,38 +237,59 @@ router.post("/addObject/:id", async (req, res) => {
 router.get("/gewete/:nameCommunity", async (req, res) => {
   const nameComunidad = req.params.nameCommunity;
   const salones = [];
+  const result = [];
   try {
     // const querySnapshot = await db.collection("salones").doc("Madrid").collection("Salones").doc('Salones').listCollections();    
     const querySnapshot = await db.collection("salones").doc(nameComunidad).collection("Salones").get();
     querySnapshot.docs.forEach(ele => salones.push({ name: ele.id, ...ele.data() }));
-    console.log(salones);
+    // console.log(salones);
+    Promise.all(salones.map(async (val, index) => await connectSQL(val.ip, val.pass, val.name))).then(function (listPromise) {
+      for (const item of listPromise) {
+        result.push(item);
+      }
+      console.log(...result);
+      res.render("Gewetes", { result, nameComunidad })
+    })
   } catch (error) {
     console.error(error);
   }
-  console.log({ip:salones[2].ip, pass:salones[2].pass, names:salones[2].name});
-  await connectSQL(salones[2].ip, salones[2].pass)
 
 })
 // -----------------------------------------------------------------------------
 // Connect to mssql
 // -----------------------------------------------------------------------------
-const connectSQL = async (server, pass) => {
+const connectSQL = async (server, pass, name) => {
+  let result;
   const sqlConfig = {
     user: 'logs',
     password: pass,
-    database: 'SIRUS',
+    database: 'SIRIUS',
     server: server,
-    port: 51304,    
+    port: 51304,
     options: {
       encrypt: false, // for azure
-      trustServerCertificate: false // change to true for local dev / self-signed certs
+      trustServerCertificate: false, // change to true for local dev / self-signed certs
+      cryptoCredentialsDetails: {
+        minVersion: 'TLSv1'
+      }
     }
   }
+
+  const co = new sql.ConnectionPool(sqlConfig);
   try {
-    await new sql.ConnectionPool(sqlConfig);
-    console.log("Conectado")
+    const e = await co.connect();
+    const resu = await e.request().query(
+      `SELECT LTI_FROM AS TYPE, SUM(LTI_AMOUNT) AS TOTAL FROM LOG_TICKET WHERE LTI_PAYOUT_DATE IS NOT NULL GROUP BY LTI_FROM ORDER BY LTI_FROM;
+    SELECT CAST(LCR_DENOMINATION_VALUE AS FLOAT) AS TYPE, SUM(LCR_STOCK) AS CANT,CAST(LCR_DENOMINATION_VALUE AS FLOAT) * SUM(LCR_STOCK) AS VALUE FROM LOG_CURRENT_LEVEL WHERE LCR_STOCK > 0 AND LCR_SHELF_CHANNEL_TYPE <> 'input' GROUP BY LCR_DENOMINATION_VALUE ORDER BY LCR_DENOMINATION_VALUE DESC;
+    SELECT LCR_DENOMINATION_VALUE AS TYPE, SUM(LCR_STOCK)* LCR_DENOMINATION_VALUE AS VALUE, SUM(LCR_STOCK) AS CANT FROM LOG_CURRENT_LEVEL WHERE LCR_SHELF_CHANNEL_TYPE='INPUT' AND LCR_STOCK > 0 GROUP BY LCR_DENOMINATION_VALUE ORDER BY LCR_DENOMINATION_VALUE DESC`);
+    return ({
+      name,
+      TICKET: resu.recordsets[0],
+      STOCK: resu.recordsets[1],
+      CASHBOX: resu.recordsets[2],
+    });
   } catch (err) {
-    console.log(err);
+    return console.log(err);
   }
 }
 
@@ -288,3 +310,5 @@ const connectSQL = async (server, pass) => {
 
 
 module.exports = router;
+
+

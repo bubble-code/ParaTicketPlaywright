@@ -1,0 +1,97 @@
+<div class="col-md-6 offset-md-3">
+  <div class="card bg-dark text-light">
+    <div class="card-header">
+
+      <h1 class="h6 text-white">Gewetes {{nameComunidad}}
+      </h1>
+    </div>
+    <div class="card-body">
+      {{#if result}}
+      <ul class="list-group">
+        {{#each result}}
+        <li
+          class="list-group-item d-flex justify-content-between
+          align-items-center">
+          <div class="my-auto">
+            <h3 class="h6 bg-info">{{name}}</h3>
+            <h3 class="h6">{{TICKET.length}}</h3>
+            <p class="fs-6"> {{CASHBOX}} </p>
+          </div>
+          <div>
+            <a
+              href="/delete-contact/{{id}}"
+              class="btn btn-danger">Delete</a>
+            <a
+              href="/edit-contact/{{id}}"
+              class="btn btn-secondary">Edit</a>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <p class="fs-4 text-center">Sin Objetivos.</p>
+      {{/if}}
+    </div>
+    <div class="card-footer">
+      <form action="/addObject/{{nameSalon}}" method="POST">
+        <h3 class="h6 text-light">Add Objetivo:</h3>
+        <div class="row">
+          <div class="col">
+            <label for="mes">Mes:</label>
+            <select class="form-select form-select-sm"
+              aria-label=".form-select-sm example" name="Mes">
+              <option value="Enero">Enero</option>
+              <option value="Febrero">Febrero</option>
+              <option value="Marzo">Marzo</option>
+              <option value="Abril">Abril</option>
+              <option value="Mayo">Mayo</option>
+              <option value="Junio">Junio</option>
+              <option value="Julio">Julio</option>
+              <option value="Agosto">Agosto</option>
+              <option value="Septiembre">Septiembre</option>
+              <option value="Octubre">Octubre</option>
+              <option value="Noviembre">Noviembre</option>
+              <option value="Diciembre">Diciembre</option>
+            </select>
+          </div>
+          <div class="col">
+            <input
+              type="number"
+              name="Target"
+              placeholder="Target"
+              class="form-control mb-3"
+              value="{{aviso.asunto}}"
+              autofocus
+              />
+          </div>
+          <div class="col">
+            <input
+              type="number"
+              name="Daily"
+              placeholder="Daily"
+              class="form-control mb-3"
+              value="{{aviso.asunto}}"
+              autofocus
+              />
+          </div>
+        </div>
+        {{!-- <div class="row">
+          <div class="col">
+            <label for="email">Contenido:</label>
+            <textarea rows="4" cols="20"
+              type="text"
+              name="text"
+              class="form-control mb-3"
+              value="{{aviso.text}}"
+              maxlength="120">
+            </textarea>
+          </div>
+        </div> --}}
+        {{!-- {{#if salones.id}} --}}
+        <button class="btn btn-primary btn-block">
+          Add
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
