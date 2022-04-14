@@ -1,9 +1,12 @@
-const { db } = require("../firebase");
-const { chromium } = require('playwright')
-const sql = require('mssql');
+import { db } from "../firebase";
+import { Router, text } from 'express';
+import { chromium } from 'playwright';
+import sql from 'mssql';
+// const { chromium } = require('playwright')
+// const sql = require('mssql');
 
-const { Router, text } = require("express");
-const { Promise } = require("mssql/lib/base");
+// const { Router, text } = require("express");
+// const { Promise } = require("mssql/lib/base");
 const router = Router();
 
 router.get("/", async (req, res) => {
@@ -73,15 +76,16 @@ router.post("/update-contact/:id", async (req, res) => {
   ]);
   // Click th >> nth=0
   const list = await page.$$('.list>tbody>tr')
+  console.log(list);
   let tem = []
   const result = []
   for (const ele of list) {
-    td = await ele.$$('td')
-    id = await td[1].innerText();
-    subject = await td[2].innerText();
-    from = await td[3].innerText();
-    date = await td[6].innerText();
-    state = await td[7].innerText();
+    let td = await ele.$$('td')
+    let id = await td[1].innerText();
+    let subject = await td[2].innerText();
+    let from = await td[3].innerText();
+    let date = await td[6].innerText();
+    let state = await td[7].innerText();
     result.push({ id, subject, from, date, state })
     // result[from] = (result[from] || 0) + 1
   }
@@ -309,6 +313,6 @@ const connectSQL = async (server, pass, name) => {
 
 
 
-module.exports = router;
+export default router;
 
 

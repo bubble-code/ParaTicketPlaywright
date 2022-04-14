@@ -1,12 +1,20 @@
-const express = require("express");
-const path = require("path");
-const exphbs = require("express-handlebars");
-const morgan = require("morgan");
+import express from "express";
+import path from 'path'
+import exphbs from 'express-handlebars'
+import morgan from 'morgan'
+import {fileURLToPath} from 'url'
+import router from "./routes"; './routes/index'
+// const path = require("path");
+// const exphbs = require("express-handlebars");
+// const morgan = require("morgan");
 
 const app = express();
 
 // Settings
-app.set("port", process.env.PORT || 3000);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.set("port", process.env.PORT || 5500);
+// console.log(__dirname );
 app.set("views", path.join(__dirname, "views"));
 app.engine(
   ".hbs",
@@ -17,14 +25,14 @@ app.engine(
 );
 app.set("view engine", ".hbs");
 
-// middlewares
+// // middlewares
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
-// Routes
-app.use(require("./routes/index"));
+// // Routes
+app.use('/',router);
 
-// Static files
+// // Static files
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-module.exports = app;
+export { app };

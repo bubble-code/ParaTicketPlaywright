@@ -1,7 +1,8 @@
-const app = require("./app");
+import {app} from  "./app";
 
-async function main() {
-  app.listen(3000);
-  console.log("Server on port ", 3000);
+function main() {
+  app.listen(5500);
+  console.log("Server on port ",5500);
 }
 main();
+

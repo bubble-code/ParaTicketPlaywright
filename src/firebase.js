@@ -1,11 +1,12 @@
-require("dotenv").config();
-const { initializeApp } = require("firebase-admin/app");
-const admin = require("firebase-admin");
-const { getFirestore } = require("firebase-admin/firestore");
-const serviceAccount = require("../claveSDK/adminsdk.json");
+import dotenv from 'dotenv'
+import admin from 'firebase-admin';
+import { initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore'
+import {serviceAccount} from '../claveSDK/adminsdk';
+dotenv.config();
 
 initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const db = getFirestore();
-module.exports = { db }; 
+export { db }; 

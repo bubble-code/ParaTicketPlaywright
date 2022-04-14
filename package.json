@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "./src/index.js",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon --experimental-modules --es-module-specifier-resolution=node src/index.js"
   },
   "author": "Alejandro",
   "license": "ISC",
-  
+  "type": "module",
   "dependencies": {
     "@google-cloud/storage": "^5.18.3",
     "dotenv": "^16.0.0",
@@ -21,6 +21,7 @@
     "morgan": "^1.10.0",
     "mssql": "^8.1.0",
     "nodemon": "^2.0.15",
-    "playwright": "^1.20.2"
+    "playwright": "^1.20.2",
+    "url": "^0.11.0"
   }
 }
