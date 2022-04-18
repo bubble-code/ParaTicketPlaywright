@@ -3,7 +3,9 @@ import path from 'path'
 import exphbs from 'express-handlebars'
 import morgan from 'morgan'
 import {fileURLToPath} from 'url'
-import router from "./routes"; './routes/index'
+import router from "./routes"; 
+import routerAverias from './routes/averias'
+import routerSalones from './routes/salones'
 // const path = require("path");
 // const exphbs = require("express-handlebars");
 // const morgan = require("morgan");
@@ -30,7 +32,10 @@ app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
 // // Routes
+app.use(express.json());
 app.use('/',router);
+app.use('/averias',routerAverias);
+app.use('/listplayroom',routerSalones);
 
 // // Static files
 app.use("/public", express.static(path.join(__dirname, "public")));

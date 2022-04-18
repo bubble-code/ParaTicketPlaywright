@@ -10,3 +10,4 @@ initializeApp({
 });
 const db = getFirestore();
 export { db }; 
+

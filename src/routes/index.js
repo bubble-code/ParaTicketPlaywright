@@ -59,6 +59,13 @@ router.post("/update-contact/:id", async (req, res) => {
 // Modulo Scraping Averias
 // -----------------------------------------------------------------------------
 ; (async () => {
+  await scraping("Madrid", "Madrid", "madrid");
+  await scraping("Mallorca", "Mallorca", "mallorca");
+  await scraping("Cantabria", "Cantabria", "cantabria");
+  await scraping("Navarra", "Navarra", "navarra");
+})()
+
+async function scraping(salon, user, pass) {
   const browser = await chromium.launch({ headless: false });
   const content = await browser.newContext({
     ignoreHTTPSErrors: true
@@ -66,9 +73,9 @@ router.post("/update-contact/:id", async (req, res) => {
   const page = await content.newPage();
   await page.goto('http://otrs.dosniha.eu/osticket/scp/login.php');
   // Fill [placeholder="e-mail o nombre de usuario"]
-  await page.fill('[placeholder="e-mail o nombre de usuario"]', 'Madrid');
+  await page.fill('[placeholder="e-mail o nombre de usuario"]', `${user}`);
   // Fill [placeholder="Contraseña"]
-  await page.fill('[placeholder="Contraseña"]', 'madrid');
+  await page.fill('[placeholder="Contraseña"]', `${pass}`);
   // Click text=Inicia sesión
   await Promise.all([
     page.waitForNavigation('http://otrs.dosniha.eu/osticket/scp/index.php'),
@@ -76,7 +83,7 @@ router.post("/update-contact/:id", async (req, res) => {
   ]);
   // Click th >> nth=0
   const list = await page.$$('.list>tbody>tr')
-  console.log(list);
+  // console.log(list);
   let tem = []
   const result = []
   for (const ele of list) {
@@ -89,13 +96,28 @@ router.post("/update-contact/:id", async (req, res) => {
     result.push({ id, subject, from, date, state })
     // result[from] = (result[from] || 0) + 1
   }
-  console.log(result);
+  const listAverPorSalon = []
+  result.forEach(currSalon => {
+    const nombSalon = currSalon.from;
+    if (!listAverPorSalon[nombSalon])
+      listAverPorSalon[nombSalon] = [];
+    listAverPorSalon[nombSalon].push(currSalon)
+
+  })
+  // console.log(listAverPorSalon);
+  // console.log("============================================================");
+  // console.log(result);
   // ===========
   await browser.close()
   try {
-    const listCollection = await db.collection("salones").doc("Madrid").collection("Salones").get();
-    result.map(async function ({ id, subject, from, date, state }) {
-      await db.collection("salones").doc("Madrid").collection("Salones").doc(from).collection("Averias").doc(id).set({
+    const colletionSalones = await db.collection("salones").doc(salon).collection("Salones").listDocuments();
+    for (const ele of colletionSalones) {
+      const listAve = await ele.collection("Averias").listDocuments();
+      listAve.forEach(async dd => await dd.delete());
+    }
+
+    result.forEach(async function ({ id, subject, from, date, state }) {
+      await db.collection("salones").doc(salon).collection("Salones").doc(from).collection("Averias").doc(id).set({
         subject,
         id,
         date,
@@ -110,27 +132,11 @@ router.post("/update-contact/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-})()
+}
 // -----------------------------------------------------------------------------
 // Modulo Salones
 // -----------------------------------------------------------------------------
-// List of Halls
-// -----------------------------------------------------------------------------
-router.get("/listplayroom/:name", async (req, res) => {
-  const nameComunidad = req.params.name;
-  try {
-    // const querySnapshot = await db.collection("salones").doc("Madrid").collection("Salones").doc('Salones').listCollections();
-    const querySnapshot = await db.collection("salones").doc(nameComunidad).collection("Salones").listDocuments();
-    const salones = querySnapshot.map((coll) => ({
-      id: coll.id
-    }));
-    res.render("ListPlayRoom", { salones, nameComunidad });
-    console.log({ salones });
-  } catch (error) {
-    console.error(error);
-  }
-})
-// -----------------------------------------------------------------------------
+
 // Add new Hall
 // -----------------------------------------------------------------------------
 router.post("/addHall/:nameComunidad", async (req, res) => {
@@ -195,6 +201,7 @@ router.get("/Objetivo/:id", async (req, res) => {
     res.render("Objetivos", { detailsObject, nameSalon: req.params.id });
     // console.log({ detailsObject });
   } catch (error) {
+
     console.error(error);
   }
   // res.redirect("Objetivos", { detailsObject });
@@ -247,7 +254,9 @@ router.get("/gewete/:nameCommunity", async (req, res) => {
     const querySnapshot = await db.collection("salones").doc(nameComunidad).collection("Salones").get();
     querySnapshot.docs.forEach(ele => salones.push({ name: ele.id, ...ele.data() }));
     // console.log(salones);
-    Promise.all(salones.map(async (val, index) => await connectSQL(val.ip, val.pass, val.name))).then(function (listPromise) {
+    Promise.all(
+      salones.map(async (val, index) => await connectSQL(val.ip, val.pass, val.name))
+    ).then(function (listPromise) {
       for (const item of listPromise) {
         result.push(item);
       }
