@@ -4,8 +4,9 @@ import exphbs from 'express-handlebars'
 import morgan from 'morgan'
 import {fileURLToPath} from 'url'
 import router from "./routes"; 
-import routerAverias from './routes/averias'
-import routerSalones from './routes/salones'
+import routerAverias from './routes/averias';
+import routerSalones from './routes/salones';
+import routerChecklist from './routes/checklists';
 // const path = require("path");
 // const exphbs = require("express-handlebars");
 // const morgan = require("morgan");
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use('/',router);
 app.use('/averias',routerAverias);
 app.use('/listplayroom',routerSalones);
+app.use('/checklist',routerChecklist);
 
 // // Static files
 app.use("/public", express.static(path.join(__dirname, "public")));
