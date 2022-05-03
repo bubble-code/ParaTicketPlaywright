@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 app.set("port", process.env.PORT || 5500);
 // console.log(__dirname );
 app.set("views", path.join(__dirname, "views"));
-app.engine(
+app.engine( 
   ".hbs",
   exphbs.create({
     defaultLayout: "main",

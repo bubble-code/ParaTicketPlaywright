@@ -7,39 +7,32 @@ const routerChecklist = Router();
 routerChecklist.get('/', async (req, res) => {
   //   const salon = req.params.salon;
   //   const comunidad = req.params.comunidad;
+  const detailsObject = [];
   console.log("salon")
   try {
     const querySnapshot = await db.collection("Checklist").listDocuments();
-    console.log(querySnapshot.length)
-    const detailsObject = querySnapshot.map((elem) => ({
-      id: elem.id
-    }));
-    res.send({ detailsObject });
+    for (const item of querySnapshot) {
+      const data = await item.get();
+      detailsObject.push({ ...data.data() });
+    }
+    // const detailsObject = querySnapshot.map((elem) => ({
+    //   id: elem.id, ...elem.data()
+    // }));
+    res.send([...detailsObject]);
   } catch (error) {
     console.log(error);
   }
 });
-// // Todas las Averias
-// routerAverias.get('/:comunidad', async (req, res) => {
-//   const salon = req.params.salon;
-//   const comunidad = req.params.comunidad;
-//   const resAverias = [];
-//   try {
-//     const querySnapshot = await db.collection("salones").doc(comunidad).collection("Salones").listDocuments();
-//     for (const salon of querySnapshot) {
-//       const averiasSalon = await salon.collection("Averias").listDocuments();
-//       for (const averia of averiasSalon) {
-//         const data = await averia.get();
-//         resAverias.push({ salon: salon.id, ...data.data() });
-//       }
-//     }
-//     // Promise.allSettled(querySnapshot.map(async (elem) => await elem.collection("Averias").listDocuments()))
-//     //   .then(e => { console.log(e.length) })
-//     // console.log(result);
-//     res.send([...resAverias]);
-//   } catch (error) {
-//     console.log(req.params.salon);
-//   }
-// });
+routerChecklist.post("/", async (req, res) => {
+  const { comunidad, prioridad, fecha, detalles } = req.body;
+  console.log({ comunidad, prioridad, fecha, detalles })
+  await db.collection("Checklist").add({
+    comunidad,
+    prioridad,
+    fecha,
+    detalles,
+  });
+});
+
 
 export default routerChecklist
