@@ -7,6 +7,7 @@ import router from "./routes";
 import routerAverias from './routes/averias';
 import routerSalones from './routes/salones';
 import routerChecklist from './routes/checklists';
+import routerComunidades from './routes/comunidades';
 // const path = require("path");
 // const exphbs = require("express-handlebars");
 // const morgan = require("morgan");
@@ -38,6 +39,7 @@ app.use('/',router);
 app.use('/averias',routerAverias);
 app.use('/listplayroom',routerSalones);
 app.use('/checklist',routerChecklist);
+app.use('/comunidades',routerComunidades);
 
 // // Static files
 app.use("/public", express.static(path.join(__dirname, "public")));

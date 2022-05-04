@@ -20,6 +20,11 @@ routerSalones.get("/:name", async (req, res) => {
     console.error(error);
   }
 
-})
+});
+routerSalones.post("/", async (req, res) => {
+  const { comunidad, ip, pass, user, location, cantMaqui, } = req.body;
+  console.log({ comunidad, ip, pass, user, location, cantMaqui })
+  await db.collection("salones").doc(comunidad).collection("Salones").add({ comunidad, ip, pass, user, location, cantMaqui });
+});
 
 export default routerSalones;
