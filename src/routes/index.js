@@ -65,7 +65,7 @@ router.post("/update-contact/:id", async (req, res) => {
   await scraping("Navarra", "Navarra", "navarra");
 })()
 
-async function scraping(salon, user, pass) {
+async function scraping(comunidad, user, pass) {
   const browser = await chromium.launch({ headless: false });
   const content = await browser.newContext({
     ignoreHTTPSErrors: true
@@ -110,18 +110,28 @@ async function scraping(salon, user, pass) {
   // ===========
   await browser.close()
   try {
-    const colletionSalones = await db.collection("salones").doc(salon).collection("Salones").listDocuments();
+    const colletionSalones = await db.collection("salones").doc(comunidad).collection("Averias").listDocuments();
     for (const ele of colletionSalones) {
-      const listAve = await ele.collection("Averias").listDocuments();
-      listAve.forEach(async dd => await dd.delete());
+      // const listAve = await ele.collection("Averias").listDocuments();
+      // listAve.forEach(async dd => await dd.delete());
+      await ele.delete();
     }
 
-    result.forEach(async function ({ id, subject, from, date, state }) {
-      await db.collection("salones").doc(salon).collection("Salones").doc(from).collection("Averias").doc(id).set({
+    result.forEach(async function ({ id, subject, from, date, state, tecnico = "", prioridad = "normal", detalle = "", inicio = "", fin = "", solucion = "", dineroPendiente = 0, estadoMaquina = "" }) {
+      await db.collection("salones").doc(comunidad).collection("Averias").doc(id).set({
+        from,
         subject,
         id,
         date,
-        state
+        state,
+        tecnico,
+        prioridad,
+        detalle,
+        inicio,
+        fin,
+        solucion,
+        dineroPendiente,
+        estadoMaquina,
       });
     })
     // const salones = listCollection.map((coll) => {

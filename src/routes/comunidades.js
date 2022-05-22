@@ -4,7 +4,7 @@ import { Router } from 'express';
 const routerComunidades = Router();
 
 // List Averias
-routerComunidades.get('/', async (req, res) => {
+routerComunidades.get('/', async (req, res) => { 
   //   const salon = req.params.salon;
   //   const comunidad = req.params.comunidad;
   const detailsObject = [];
