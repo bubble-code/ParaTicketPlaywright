@@ -87,6 +87,7 @@ async function scraping(comunidad, user, pass) {
   let tem = []
   const result = []
   for (const ele of list) {
+    console.log(ele);
     let td = await ele.$$('td')
     let id = await td[1].innerText();
     let subject = await td[2].innerText();
