@@ -78,19 +78,17 @@ class TicketsAverias {
   async listFauls(page) {
     return new Promise(async (resolve, reject) => {
       try {
-        // const list = await page.$$('.list>tbody>tr');
-        // const page = await page;
         await page.waitForSelector('.list');
         const data = await page.evaluate(() => {
           const table = document.querySelector('.list');
           const rows = [...table.querySelectorAll('tbody>tr')];
           const data = rows.map(row => {
             const td = [...row.querySelectorAll('td')];
-            let id = td[1].innerText;
-            let subject = td[2].innerText;
-            let from = td[3].innerText;
-            let date = td[6].innerText;
-            let state = td[7].innerText;
+            let id = td[1].innerText.replace("\n", "").trim();
+            let subject = td[2].innerText.replace("\n", "").trim();
+            let from = td[3].innerText.replace("\n", "").trim();
+            let date = td[6].innerText.replace("\n", "").trim();
+            let state = td[7].innerText.replace("\n", "").trim();
             return { id, subject, from, date, state };
           });
           return data;
@@ -100,12 +98,12 @@ class TicketsAverias {
         reject(error);
       }
     });
-  }
+  };
 
   async getTicketDetails(page, id) {
     let estadoMaquina, dineroPendiente, message;
-    await page.waitForNavigation();
     return new Promise(async (resolve, reject) => {
+      await page.waitForSelector('table.ticket_info:nth-child(7)');
       try {
         dineroPendiente = await page.evaluate(() => {
           const table = document.querySelector('table.ticket_info:nth-child(7)');
@@ -118,6 +116,10 @@ class TicketsAverias {
           })
           return data;
         });
+      } catch (error) {
+        dineroPendiente = [];
+      };
+      try {
         estadoMaquina = await page.evaluate(() => {
           const table = document.querySelector('table.ticket_info:nth-child(8)');
           const rows = [...table.querySelectorAll('tbody>tr')] || [];
@@ -129,6 +131,10 @@ class TicketsAverias {
           })
           return data;
         });
+      } catch (error) {
+        estadoMaquina = [];
+      };
+      try {
         message = await page.evaluate(() => {
           const messa = document.querySelector('.thread-body');
           const message = messa.innerText;;
@@ -136,7 +142,8 @@ class TicketsAverias {
         });
         resolve({ estadoMaquina, dineroPendiente, message });
       } catch (error) {
-        reject(error);
+        return data;
+        // reject(error);
       }
     });
 

@@ -62,12 +62,8 @@ router.post("/update-contact/:id", async (req, res) => {
 ; (async () => {
   await scraping("Madrid", "Madrid", "madrid");
   await scraping("Mallorca", "Mallorca", "mallorca");
-  // await scraping("Cantabria", "Cantabria", "cantabria");
-  // await scraping("Navarra", "Navarra", "navarra");
-
-  // const ticketMallorca = new TicketsAverias("Mallorca", "Mallorca", "mallorca");
-  // const ticketCantabria = new TicketsAverias("Cantabria", "Cantabria", "cantabria");
-  // const ticketNavarra = new TicketsAverias("Navarra", "Navarra", "navarra");
+  await scraping("Cantabria", "Cantabria", "cantabria");
+  await scraping("Navarra", "Navarra", "navarra");
 })()
 
 async function scraping(comunidad, user, pass) {
@@ -98,7 +94,7 @@ async function scraping(comunidad, user, pass) {
   //     listAverPorSalon[nombSalon] = [];
   //   listAverPorSalon[nombSalon].push(currSalon)
 
-  
+
   await browser.close()
   try {
     const colletionSalones = await db.collection("salones").doc(comunidad).collection("Averias").listDocuments();
@@ -108,7 +104,7 @@ async function scraping(comunidad, user, pass) {
       await ele.delete();
     }
 
-    result.forEach(async function ({ id, subject, from, date, state, tecnico = "", prioridad = "normal", detalle = "", inicio = "", fin = "", solucion = "", dineroPendiente = 0, cantDineroPendiente = 0, estadoMaquina = "" }) {
+    result.forEach(async function ({ id, subject, from, date, state, tecnico = "", prioridad = "normal", detalle = "", inicio = "", fin = "", solucion = "", dineroPendiente = 0, message = 0, estadoMaquina = "" }) {
       await db.collection("salones").doc(comunidad).collection("Averias").doc(id).set({
         from,
         subject,
@@ -122,8 +118,8 @@ async function scraping(comunidad, user, pass) {
         fin,
         solucion,
         dineroPendiente,
-        estadoMaquina,
-        cantDineroPendiente,
+        estadoMaquina,        
+        message
       });
     })
   } catch (error) {
