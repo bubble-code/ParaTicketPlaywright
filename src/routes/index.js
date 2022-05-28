@@ -1,7 +1,8 @@
 import { db } from "../firebase";
-import { Router, text } from 'express';
+import e, { Router, text } from 'express';
 import { chromium } from 'playwright';
 import sql from 'mssql';
+import TicketsAverias from '../controler/PlayWriTicket';
 // const { chromium } = require('playwright')
 // const sql = require('mssql');
 
@@ -61,54 +62,43 @@ router.post("/update-contact/:id", async (req, res) => {
 ; (async () => {
   await scraping("Madrid", "Madrid", "madrid");
   await scraping("Mallorca", "Mallorca", "mallorca");
-  await scraping("Cantabria", "Cantabria", "cantabria");
-  await scraping("Navarra", "Navarra", "navarra");
+  // await scraping("Cantabria", "Cantabria", "cantabria");
+  // await scraping("Navarra", "Navarra", "navarra");
+
+  // const ticketMallorca = new TicketsAverias("Mallorca", "Mallorca", "mallorca");
+  // const ticketCantabria = new TicketsAverias("Cantabria", "Cantabria", "cantabria");
+  // const ticketNavarra = new TicketsAverias("Navarra", "Navarra", "navarra");
 })()
 
 async function scraping(comunidad, user, pass) {
-  const browser = await chromium.launch({ headless: false });
-  const content = await browser.newContext({
-    ignoreHTTPSErrors: true
-  });
-  const page = await content.newPage();
-  await page.goto('http://otrs.dosniha.eu/osticket/scp/login.php');
-  // Fill [placeholder="e-mail o nombre de usuario"]
-  await page.fill('[placeholder="e-mail o nombre de usuario"]', `${user}`);
-  // Fill [placeholder="Contraseña"]
-  await page.fill('[placeholder="Contraseña"]', `${pass}`);
-  // Click text=Inicia sesión
-  await Promise.all([
-    page.waitForNavigation('http://otrs.dosniha.eu/osticket/scp/index.php'),
-    page.click('text=Inicia sesión')
-  ]);
-  // Click th >> nth=0
-  const list = await page.$$('.list>tbody>tr')
-  // console.log(list);
-  let tem = []
-  const result = []
-  for (const ele of list) {
-    console.log(ele);
-    let td = await ele.$$('td')
-    let id = await td[1].innerText();
-    let subject = await td[2].innerText();
-    let from = await td[3].innerText();
-    let date = await td[6].innerText();
-    let state = await td[7].innerText();
-    result.push({ id, subject, from, date, state })
-    // result[from] = (result[from] || 0) + 1
-  }
-  const listAverPorSalon = []
-  result.forEach(currSalon => {
-    const nombSalon = currSalon.from;
-    if (!listAverPorSalon[nombSalon])
-      listAverPorSalon[nombSalon] = [];
-    listAverPorSalon[nombSalon].push(currSalon)
+  const ticketMadrid = new TicketsAverias(comunidad, user, pass);
+  const [page, browser] = await ticketMadrid.loginPageScraping()
+  const data = await ticketMadrid.listFauls(page);
 
-  })
-  // console.log(listAverPorSalon);
-  // console.log("============================================================");
-  // console.log(result);
-  // ===========
+  const result = []
+
+  for (const element of data) {
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator(`text=${element.id}`).click(),
+    ]);
+    result.push({ ...await ticketMadrid.getTicketDetails(page), ...element }),
+      await Promise.all([
+        page.waitForNavigation(),
+        page.locator('#nav >> text=Tickets').click()
+      ]);
+  }
+
+  // result[from] = (result[from] || 0) + 1
+  // }
+  // const listAverPorSalon = []
+  // result.forEach(currSalon => {
+  //   const nombSalon = currSalon.from;
+  //   if (!listAverPorSalon[nombSalon])
+  //     listAverPorSalon[nombSalon] = [];
+  //   listAverPorSalon[nombSalon].push(currSalon)
+
+  
   await browser.close()
   try {
     const colletionSalones = await db.collection("salones").doc(comunidad).collection("Averias").listDocuments();
@@ -118,7 +108,7 @@ async function scraping(comunidad, user, pass) {
       await ele.delete();
     }
 
-    result.forEach(async function ({ id, subject, from, date, state, tecnico = "", prioridad = "normal", detalle = "", inicio = "", fin = "", solucion = "", dineroPendiente = 0, estadoMaquina = "" }) {
+    result.forEach(async function ({ id, subject, from, date, state, tecnico = "", prioridad = "normal", detalle = "", inicio = "", fin = "", solucion = "", dineroPendiente = 0, cantDineroPendiente = 0, estadoMaquina = "" }) {
       await db.collection("salones").doc(comunidad).collection("Averias").doc(id).set({
         from,
         subject,
@@ -133,13 +123,9 @@ async function scraping(comunidad, user, pass) {
         solucion,
         dineroPendiente,
         estadoMaquina,
+        cantDineroPendiente,
       });
     })
-    // const salones = listCollection.map((coll) => {
-    //   if (result.hasOwnProperty(coll.id)) {
-    //     console.log(coll.id)
-    //   }
-    // });
   } catch (error) {
     console.error(error);
   }
