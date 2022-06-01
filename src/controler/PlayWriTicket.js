@@ -101,7 +101,7 @@ class TicketsAverias {
   };
 
   async getTicketDetails(page, id) {
-    let estadoMaquina, dineroPendiente, message;
+    let estadoMaquina, dineroPendiente, detalle;
     return new Promise(async (resolve, reject) => {
       await page.waitForSelector('table.ticket_info:nth-child(7)');
       try {
@@ -135,12 +135,12 @@ class TicketsAverias {
         estadoMaquina = [];
       };
       try {
-        message = await page.evaluate(() => {
+        detalle = await page.evaluate(() => {
           const messa = document.querySelector('.thread-body');
-          const message = messa.innerText;;
-          return message;
+          const detalle = messa.innerText;
+          return detalle;
         });
-        resolve({ estadoMaquina, dineroPendiente, message });
+        resolve({ estadoMaquina, dineroPendiente, detalle });
       } catch (error) {
         return data;
         // reject(error);
